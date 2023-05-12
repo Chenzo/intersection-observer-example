@@ -1,95 +1,84 @@
-import Image from 'next/image'
+"use client"; // this is a client component 👈🏽
 import styles from './page.module.css'
+import React, { useRef, useEffect } from "react";
 
+
+
+const handleUnderline = function (entries) {
+
+  let highlighted = "";
+  let highlightedRatio = 0;
+  console.log("-------------------")
+  entries.forEach((entry) => {
+    let id = entry.target.id;
+    console.log(id, entry.intersectionRatio, entry.isIntersecting);
+    //scrolling oddly between two sections can bork this... - vince 06.14.2022
+    //might need a timeout after a certain amount of time to iterate over each thing and check
+    //console.log(id, entry.intersectionRatio, entry.isIntersecting);
+    if (entry.isIntersecting) {
+      //if (entry.intersectionRatio > 0) {
+      //document.querySelector(`#${id}`).classList.add(styles.highlight);
+      console.log(entry.intersectionRatio +">"+ highlightedRatio)
+      console.log(entry.intersectionRatio > highlightedRatio)
+      if (entry.intersectionRatio > highlightedRatio) {
+        console.log("intersecting - " + id)
+        highlighted = id;
+        highlightedRatio = entry.intersectionRatio;
+      }
+    } else {
+      console.log("not intersecting - " + id);
+      document.querySelector(`#${id}`).classList.remove(styles.highlight);
+    }
+  });
+
+
+  //select each element with the class of highlight and remove it
+  /* document.querySelectorAll(`.${styles.highlight}`).forEach((el) => {
+    el.classList.remove(styles.highlight);
+  }); */
+
+  if (highlighted != "") {
+  console.log("highlighted: " + highlighted);
+  document.querySelector(`#${highlighted}`).classList.add(styles.highlight);
+  }
+};
 export default function Home() {
+
+  useEffect(() => {
+    let underlineObserver = new IntersectionObserver(handleUnderline, {rootMargin: '-5% 0px -90%'},{threshold: [0, 0.51]});
+                                                                        //margins are 100% with a little fugding for top and bottom
+
+    underlineObserver.observe( document.querySelector("#section1"));
+    underlineObserver.observe( document.querySelector("#section2"));
+    underlineObserver.observe( document.querySelector("#section3"));
+    underlineObserver.observe( document.querySelector("#section4"));
+
+    return () => {
+      underlineObserver.disconnect();
+    };
+  }, []);
+
+
+
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+      
+      <div className={styles.aSection} id="section1">
+        <h1>Section One</h1>
       </div>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
+      <div className={styles.aSection} id="section2">
+        <h1>Section Two</h1>
       </div>
 
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      <div className={styles.aSection} id="section3">
+        <h1>Section Three</h1>
       </div>
+
+      <div className={styles.aSection} id="section4">
+        <h1>Section Four</h1>
+      </div>
+
     </main>
   )
 }
